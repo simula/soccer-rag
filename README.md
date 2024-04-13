@@ -24,7 +24,7 @@ The data required to run the code is not included in this repository.
 The data can be downloaded from the [Soccernet](https://www.soccer-net.org/data).
 Files needed are:
 * Labels-v2.json [link](https://www.soccer-net.org/data#h.5klq86rmgt96)
-* Labels-captions.json
+* Labels-captions.json [link](https://www.soccer-net.org/data#h.ccybjenq8od4)
 
 The data should be placed in the ./data/Dataset/SoccerNet/ directory
 For each league, create a new folder with the name of the leauge
