@@ -438,8 +438,8 @@ def fill_Augmented_League(file_path):
 
 if __name__ == "__main__":
     # Example directory path
-    process_json_files('../../data/Dataset/SN-ASR_captions_and_actions/')
-    fill_Augmented_Team('../../data/Dataset/augmented.csv')
-    fill_Augmented_League('../../data/Dataset/augmented_leauges.csv')
+    process_json_files('../data/Dataset/SoccerNet/')
+    fill_Augmented_Team('../data/Dataset/augmented.csv')
+    fill_Augmented_League('../data/Dataset/augmented_leauges.csv')
 # Rename the event/annotation table to something more descriptive. Events are fucking everything else over
 

@@ -1,11 +1,13 @@
-openai
-langchainhub
+openai==1.10.0
+langchainhub==0.1.14
 langchain == 0.1.4
-langchain_openai
-langchain_experimental
-sqlalchemy
-python-dotenv
-chromadb
-python-Levenshtein
-rapidfuzz
-thefuzz
+langchain-experimental==0.0.49
+langchain-openai==0.0.5
+SQLAlchemy==2.0.29
+python-dotenv==1.0.1
+python-Levenshtein==0.25.0
+rapidfuzz==3.6.1
+thefuzz==0.22.1
+faiss-cpu==1.7.4
+Levenshtein==0.25.0
+langsmith==0.1.29
