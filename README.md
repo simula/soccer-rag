@@ -1,5 +1,16 @@
 # SoccerRAG: Multimodal Soccer Information Retrieval via Natural Queries
 
+## Abstract
+The rapid evolution of digital sports media necessitates sophisticated information retrieval systems that can efficiently parse extensive multimodal datasets. This paper intro-
+duces SoccerRAG, an innovative framework designed to harness the power of Retrieval Augmented Generation (RAG) and Large
+Language Models (LLMs) to extract soccer-related information through natural language queries. By leveraging a multimodal
+dataset, SoccerRAG supports dynamic querying and automatic data validation, enhancing user interaction and accessibility to
+sports archives. Our evaluations indicate that SoccerRAG effectively handles complex queries, offering significant improvements
+over traditional retrieval systems in terms of accuracy and
+user engagement. The results underscore the potential of using
+RAG and LLMs in sports analytics, paving the way for future
+advancements in the accessibility and real-time processing of
+sports data.
 ## Setup
 ````bash
 pip install -r requirements.txt
@@ -35,6 +46,7 @@ python main.py
 ````
 The code will prompt you to enter a natural language query.
 
+### Example query
 ````angular2html
 Enter a query: How many goals has Messi scored each season?
 Lionel Messi has scored the following number of goals each season:
@@ -44,7 +56,7 @@ Lionel Messi has scored the following number of goals each season:
 ````
 
 ## Results
-..
+![result-table.png](media%2Fresult-table.png)
 
 ## Acknowledgements
 ..
