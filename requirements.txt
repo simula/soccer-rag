@@ -1,0 +1,11 @@
+openai
+langchainhub
+langchain == 0.1.4
+langchain_openai
+langchain_experimental
+sqlalchemy
+python-dotenv
+chromadb
+python-Levenshtein
+rapidfuzz
+thefuzz

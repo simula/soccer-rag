@@ -1,0 +1,4 @@
+{
+  "extract_prompt": "Extract and save the relevant entities mentioned     in the following passage together with their properties.\\n\\n    Only extract the properties mentioned in the 'information_extraction' function.\\n\\n    The questions are football related. game_event can be things like yellow cards, goals, assists etc.\\n\\n    If a property is not present and is not required in the function parameters, do not include it in the output.\\n\\n    Passage:\\n    {input}\\n    ",
+
+}

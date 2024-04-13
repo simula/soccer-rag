@@ -1,0 +1,105 @@
+[
+  {
+    "input": "List all teams",
+    "query": "SELECT * FROM teams;"
+  },
+  {
+    "input": "Find a player by name",
+    "query": "SELECT * FROM players WHERE name = 'name';"
+  },
+  {
+    "input": "Select the names of teams and calculate their total home and away goals in the 2016-2017 season. Count the total matches played and calculate the average goals per match. Order the teams by their total goals scored and limit the results to the top three.",
+    "query": "SELECT teams.name, SUM(CASE WHEN games.home_team_id = teams.id THEN games.goal_home ELSE 0 END) AS home_goals, SUM(CASE WHEN games.away_team_id = teams.id THEN games.goal_away ELSE 0 END) AS away_goals, COUNT(*) AS matches_played, (SUM(CASE WHEN games.home_team_id = teams.id THEN games.goal_home ELSE 0 END) + SUM(CASE WHEN games.away_team_id = teams.id THEN games.goal_away ELSE 0 END)) * 1.0 / COUNT(*) AS avg_goals_per_match FROM games INNER JOIN teams ON teams.id = games.home_team_id OR teams.id = games.away_team_id WHERE games.season = '2016-2017' GROUP BY teams.name ORDER BY (home_goals + away_goals) DESC LIMIT 3;');"
+  },
+  {
+    "input": "Retrieve the name and country of a player identified by a specific hash value.",
+    "query": "SELECT players.name, players.country FROM players WHERE players.hash = 'hash';"
+  },
+  {
+    "input": "Get information about what happened in a time period",
+    "query": "SELECT event_time_start, event_time_end, period, description FROM Commentary WHERE game_id = game_id AND period = period AND ABS(event_time_start - start_time) <= duration;"
+  },
+  {
+    "input": "For the a game with ID X, list the home team's name, players' names (with a captain indicator), and shirt numbers.",
+    "query": "SELECT t.name AS team_name, p.name || CASE WHEN l.captain THEN ' (C)' ELSE '' END AS player_name, l.shirt_number FROM games g JOIN teams t ON g.home_team_id = t.id JOIN game_lineup l ON t.id = l.team_id AND l.game_id = g.id JOIN players p ON l.player_id = p.hash WHERE g.id = X;"
+  },
+  {
+    "input": "Who was the home team, and away team in game X?",
+    "query": "SELECT home_team.name AS home_team, away_team.name AS away_team FROM games JOIN teams AS home_team ON games.home_team_id = home_team.id JOIN teams AS away_team ON games.away_team_id = away_team.id WHERE games.id = X;"
+  },
+  {
+    "input": "For game X, list all Shots on targets and goals, for each team (using their name not id) for each period",
+    "query": "SELECT t.name AS team_name, a.period, SUM(CASE WHEN a.label = 'Shots on target' THEN 1 ELSE 0 END) AS shots_on_target, SUM(CASE WHEN a.label = 'Goal' THEN 1 ELSE 0 END) AS goals FROM annotations a JOIN teams t ON a.team_id = t.id WHERE a.game_id = X AND (a.label = 'Shots on target' OR a.label = 'Goal') GROUP BY t.name, a.period ORDER BY t.name, a.period;"
+  },
+  {
+    "input": "How many offsides were caused by the away team in game X, also get the time of the event",
+    "query": "SELECT a.game_id, a.label, a.position, a.period FROM annotations a JOIN games g ON a.game_id = g.id WHERE a.game_id = X AND a.label = 'Offside' AND a.team_id = g.away_team_id;"
+  },
+  {
+    "input": "all goals scored by <team> in <season>",
+    "query": "SELECT t.name AS TeamName, g.season, SUM(CASE WHEN g.home_team_id = t.id THEN g.goal_home ELSE 0 END + CASE WHEN g.away_team_id = t.id THEN g.goal_away ELSE 0 END) AS TotalGoals FROM games g JOIN teams t ON g.home_team_id = t.id OR g.away_team_id = t.id WHERE t.name = '<team>' AND g.season = '<season>' GROUP BY t.name, g.season;"
+  },
+    {
+    "input": "All games played by <team> in <season> in <league>",
+    "query": "SELECT g.id, g.date, g.season, l.name AS LeagueName, ht.name AS HomeTeam, at.name AS AwayTeam, g.score FROM games g JOIN teams ht ON g.home_team_id = ht.id JOIN teams at ON g.away_team_id = at.id JOIN leagues l ON g.league_id = l.id WHERE (ht.name = '<team>' OR at.name = '<team>') AND l.name = '<league>' AND g.season = '<season>';"
+  },
+  {
+    "input": "List all teams that played against <team> in season <season> and league <league>",
+    "query": "SELECT DISTINCT CASE WHEN ht.name = '<team>' THEN at.name ELSE ht.name END AS OpponentTeam FROM games g JOIN teams ht ON g.home_team_id = ht.id JOIN teams at ON g.away_team_id = at.id JOIN leagues l ON g.league_id = l.id WHERE (ht.name = '<team>' OR at.name = '<team>') AND l.name = '<league>' AND g.season = '<season>' ORDER BY OpponentTeam;"
+  },
+  {
+    "input": "Get home and away stats for <team> in <season>",
+    "query": "WITH home_games AS (SELECT g.id, g.season, g.home_team_id AS team_id, CASE WHEN g.goal_home > g.goal_away THEN 1 ELSE 0 END AS won, CASE WHEN g.goal_home = g.goal_away THEN 1 ELSE 0 END AS draw, CASE WHEN g.goal_home < g.goal_away THEN 1 ELSE 0 END AS lost FROM games g JOIN teams t ON g.home_team_id = t.id WHERE t.name = '<team>' AND g.season = '<season>'), away_games AS (SELECT g.id, g.season, g.away_team_id AS team_id, CASE WHEN g.goal_away > g.goal_home THEN 1 ELSE 0 END AS won, CASE WHEN g.goal_away = g.goal_home THEN 1 ELSE 0 END AS draw, CASE WHEN g.goal_away < g.goal_home THEN 1 ELSE 0 END AS lost FROM games g JOIN teams t ON g.away_team_id = t.id WHERE t.name = '<team>' AND g.season = '<season>'), home_stats AS (SELECT COUNT(*) AS total_home_games, SUM(won) AS home_wins, SUM(draw) AS home_draws, SUM(lost) AS home_losses FROM home_games), away_stats AS (SELECT COUNT(*) AS total_away_games, SUM(won) AS away_wins, SUM(draw) AS away_draws, SUM(lost) AS away_losses FROM away_games) SELECT hs.total_home_games, hs.home_wins, hs.home_draws, hs.home_losses, as_stats.total_away_games, as_stats.away_wins, as_stats.away_draws, as_stats.away_losses FROM home_stats hs, away_stats as_stats;"
+  },
+  {
+    "input": "How many goals did <player> score in <season> in <league>?",
+    "query": "SELECT COUNT(*) AS goal_count FROM player_events pe JOIN players p ON pe.player_id = p.hash JOIN games g ON pe.game_id = g.id JOIN leagues l ON g.league_id = l.id JOIN player_event_labels pel ON pe.type = pel.id WHERE p.name = <player> AND g.season = <season> AND l.name = <league> AND pel.label = 'Goal';"
+  },
+  {
+    "input": "How many goals did <player> score in <season>?",
+    "query": "SELECT COUNT(*) AS goal_count FROM player_events pe JOIN players p ON pe.player_id = p.hash JOIN games g ON pe.game_id = g.id JOIN player_event_labels pel ON pe.type = pel.id WHERE p.name = <player> AND g.season = <season> AND pel.label = 'Goal';"
+  },
+  {
+    "input": "List all teams that played against <team> in season <season>",
+    "query": "SELECT DISTINCT opponent.name AS opponent_name FROM games JOIN teams AS opponent ON (opponent.id = games.home_team_id OR opponent.id = games.away_team_id) JOIN teams AS specified_team ON (specified_team.id = games.home_team_id OR specified_team.id = games.away_team_id) WHERE (games.home_team_id = (SELECT id FROM teams WHERE name = '<team>') OR games.away_team_id = (SELECT id FROM teams WHERE name = '<team>')) AND games.season = '<season>' AND opponent.name != '<team>'"
+  },
+  {
+    "input": "List all teams in <league> in <season>",
+    "query": "SELECT DISTINCT team.name FROM games JOIN teams team ON team.id = games.home_team_id OR team.id = games.away_team_id WHERE games.league_id = (SELECT id FROM leagues WHERE name = '<league_name>') AND games.season = '<season>'"
+  },
+  {
+    "input": "List all games in <league> in <season> with <event> in first half",
+    "query": "SELECT ht.name AS home_team, at.name AS away_team, g.score, g.date FROM games g JOIN leagues l ON g.league_id = l.id JOIN events e ON g.id = e.game_id AND g.home_team_id = e.team_id JOIN teams ht ON g.home_team_id = ht.id JOIN teams at ON g.away_team_id = at.id WHERE l.name = '<leauge>' AND g.season = '<season>' AND e.period = 1 AND e.label = '<event>' GROUP BY g.id;"
+  },
+  {
+    "input": "List all games in <league> in <season> with <event>, and include the number of times the event occurred",
+    "query": "SELECT ht.name AS home_team, at.name AS away_team, g.score, g.date, COUNT(e.id) AS event_count FROM games g JOIN leagues l ON g.league_id = l.id JOIN events e ON g.id = e.game_id AND g.home_team_id = e.team_id JOIN teams ht ON g.home_team_id = ht.id JOIN teams at ON g.away_team_id = at.id WHERE l.name = '<leauge>' AND g.season = '<season>' AND e.label = '<event>' GROUP BY g.id;"
+  },
+  {
+    "input": "What teams and in what season did <player> play in?",
+    "query": "SELECT DISTINCT p.name AS player_name, t.name AS team_name, g.season, l.name AS league_name FROM game_lineup gl JOIN players p ON gl.player_id = p.hash JOIN teams t ON gl.team_id = t.id JOIN games g ON gl.game_id = g.id JOIN leagues l ON g.league_id = l.id WHERE p.name = '<player>' ORDER BY p.name, t.name, g.season, l.name;"
+  },
+  {
+    "input": "List all players in <team> in <season>",
+    "query": "SELECT DISTINCT p.name AS player_name FROM game_lineup gl JOIN players p ON gl.player_id = p.hash JOIN teams t ON gl.team_id = t.id JOIN games g ON gl.game_id = g.id WHERE t.name = '<team>' AND g.season = '<season>' ORDER BY p.name;"
+  },
+  {
+    "input": "List all teams a player has played for",
+    "query": "SELECT DISTINCT t.name AS team_name FROM game_lineup gl JOIN players p ON gl.player_id = p.hash JOIN teams t ON gl.team_id = t.id WHERE p.name = '<player>' ORDER BY t.name;"
+  },
+  {
+    "input": "List all yellow and red cards for game <game_id>, sorted by time",
+    "query": "SELECT p.name AS player_name, pel.label AS card_type, pe.time AS event_time FROM player_events pe JOIN players p ON pe.player_id = p.hash JOIN player_event_labels pel ON pe.type = pel.id WHERE pe.game_id = <game_id> AND (pel.label = 'Yellow card' OR pel.label = 'Red card') ORDER BY CAST(pe.time AS UNSIGNED) ASC;"
+  },
+  {
+    "input": "What player had the first <event> in league <league> in season <season>?",
+    "query": "SELECT p.name AS player_name, pe.game_id, pe.time AS event_time FROM player_events pe JOIN players p ON pe.player_id = p.hash JOIN (SELECT g.id FROM games g JOIN leagues l ON g.league_id = l.id WHERE g.season = '<season>' AND l.id = <leauge_id> ORDER BY g.id LIMIT 1) AS first_game ON pe.game_id = first_game.id JOIN player_event_labels pel ON pe.type = pel.id WHERE pel.label = <event> ORDER BY CAST(pe.time AS UNSIGNED) ASC LIMIT 1;"
+  },
+  {
+    "input": "How many times did <player> get substituted in <season>?",
+    "query": "SELECT COUNT(*) AS substitution_count FROM player_events pe JOIN players p ON pe.player_id = p.hash JOIN games g ON pe.game_id = g.id WHERE p.hash = <player_hash> AND g.season = <season> AND (pe.type = 6 or pe.type = 7)"
+  }
+
+]
+
+

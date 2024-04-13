@@ -1,0 +1,61 @@
+{
+    "properties": {
+        "person_name": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "db_table": "players",
+                "db_column": "name",
+                "pk_column": "hash",
+                "numeric": false
+            }
+        },
+        "team_name": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "db_table": "teams",
+                "db_column": "name",
+                "pk_column": "id",
+                "numeric": false,
+                "augmented_table": "augmented_teams",
+                "augmented_column": "augmented_name",
+                "augmented_fk": "team_id"
+            }
+        },
+        "year_season": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "db_table": "games",
+                "db_column": "season",
+                "pk_column": null,
+                "numeric": true
+            }
+        },
+        "in_game_event": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "db_table": "events",
+                "db_column": "label",
+                "pk_column": null,
+                "numeric": false
+            }
+        },
+            "league": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "db_table": "leagues",
+                "db_column": "name",
+                "pk_column": "id",
+                "numeric": false,
+                "augmented_table": "augmented_leagues",
+                "augmented_column": "augmented_name",
+                "augmented_fk": "league_id"
+            }
+        }
+    },
+    "required": []
+}
