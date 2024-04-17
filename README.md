@@ -1,16 +1,8 @@
 # SoccerRAG: Multimodal Soccer Information Retrieval via Natural Queries
 
 ## Abstract
-The rapid evolution of digital sports media necessitates sophisticated information retrieval systems that can efficiently parse extensive multimodal datasets. This paper intro-
-duces SoccerRAG, an innovative framework designed to harness the power of Retrieval Augmented Generation (RAG) and Large
-Language Models (LLMs) to extract soccer-related information through natural language queries. By leveraging a multimodal
-dataset, SoccerRAG supports dynamic querying and automatic data validation, enhancing user interaction and accessibility to
-sports archives. Our evaluations indicate that SoccerRAG effectively handles complex queries, offering significant improvements
-over traditional retrieval systems in terms of accuracy and
-user engagement. The results underscore the potential of using
-RAG and LLMs in sports analytics, paving the way for future
-advancements in the accessibility and real-time processing of
-sports data.
+The rapid evolution of digital sports media necessitates sophisticated information retrieval systems that can efficiently parse extensive multimodal datasets. This work introduces SoccerRAG, an innovative framework designed to harness the power of Retrieval Augmented Generation (RAG) and Large Language Models (LLMs) to extract soccer-related information through natural language queries. By leveraging a multimodal dataset, SoccerRAG supports dynamic querying and automatic data validation, enhancing user interaction and accessibility to sports archives. Our evaluations indicate that SoccerRAG effectively handles complex queries, offering significant improvements over traditional retrieval systems in terms of accuracy and user engagement. The results underscore the potential of using RAG and LLMs in sports analytics, paving the way for future advancements in the accessibility and real-time processing of sports data.
+
 ## Setup
 ````bash
 pip install -r requirements.txt
@@ -59,8 +51,16 @@ Lionel Messi has scored the following number of goals each season:
 ![result-table.png](media%2Fresult-table.png)
 
 ## Acknowledgements
-..
+This research was partly funded by the Research Council of Norway, project number 346671 ([AI-storyteller](https://prosjektbanken.forskningsradet.no/project/FORISS/346671)). 
 
 ## Citation
-..
+```
+@incollection{Strand2024,
+    author = {Aleksander Theo Strand et al.},
+    title = {{SoccerRAG: Multimodal Soccer Information Retrieval via Natural Queries}},
+    booktitle = {{CBMI 2024: 21st International Conference on Content-Based Multimedia Indexing (under review)}},
+    year = {2024},
+    publisher = {IEEE}
+}
+```
 
