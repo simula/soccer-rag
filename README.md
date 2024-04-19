@@ -56,7 +56,7 @@ This research was partly funded by the Research Council of Norway, project numbe
 ## Citation
 ```
 @incollection{Strand2024,
-    author = {Aleksander Theo Strand and Sushant Gautam and Cise Midoglu and P{\aa}l Halvorsen},
+    author = {Aleksander Theo Strand and Sushant Gautam and Cise Midoglu and Pål Halvorsen},
     title = {{SoccerRAG: Multimodal Soccer Information Retrieval via Natural Queries}},
     journal = {{CBMI 2024: 21st International Conference on Content-Based Multimedia Indexing}},
     note = {Under review},
