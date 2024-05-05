@@ -8,6 +8,7 @@ python-dotenv==1.0.1
 python-Levenshtein==0.25.0
 rapidfuzz==3.6.1
 thefuzz==0.22.1
-faiss-cpu==1.7.4
+faiss-cpu
 Levenshtein==0.25.0
-langsmith==0.1.29
+langsmith~=0.1.54
+python-dotenv==1.0.1
