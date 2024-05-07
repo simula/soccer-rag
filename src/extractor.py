@@ -36,6 +36,8 @@ if os.getenv('LANGSMITH'):
 db_uri = os.getenv('DATABASE_PATH')
 db_uri = f"sqlite:///{db_uri}"
 db = SQLDatabase.from_uri(db_uri)
+few_shot_n = os.getenv('FEW_SHOT')
+few_shot_n = int(few_shot_n)
 
 
 # from langchain_anthropic import ChatAnthropic
@@ -220,28 +222,30 @@ def extract_properties(prompt, schema_config, custom_extractor_prompt=None):
         return None
 
 
-def recheck_property_value(properties, property_name, retrievers, input_func):
+def recheck_property_value(properties, property_name, value, retrievers):
     while True:
-        new_value = input_func(f"Enter new value for {property_name} or type 'quit' to stop: ")
+        print(property_name)
+        new_value = input(f"Enter new value for {property_name} - {value} or type 'quit' to stop: ")
         if new_value.lower() == 'quit':
             break  # Exit the loop and do not update the property
 
-        new_top_matches = retrievers[property_name].find_close_matches(new_value, n=3)
+
+        new_top_matches = retrievers.find_close_matches(new_value, n=few_shot_n)
         if new_top_matches:
             # Display new top matches and ask for confirmation or re-entry
             print("\nNew close matches found:")
             for i, match in enumerate(new_top_matches, start=1):
                 print(f"[{i}] {match}")
-            print("[4] Re-enter value")
-            print("[5] Quit without updating")
+            print(f"[{i+1}] Re-enter value")
+            print(f"[{i+2}] Quit without updating")
 
-            selection = input_func("Select the best match (1-3), choose 4 to re-enter value, or 5 to quit: ")
-            if selection in ['1', '2', '3']:
+            selection = input(f"Select the best match (1-{i}), choose {i+1} to re-enter value, or {i+2} to quit: ")
+            if selection in [str(i) for i in range(1, i + 1)]:
                 selected_match = new_top_matches[int(selection) - 1]
                 properties[property_name] = selected_match  # Update the dictionary directly
                 print(f"Updated {property_name} to {selected_match}")
                 break  # Successfully updated, exit the loop
-            elif selection == '5':
+            elif selection == f'{i+2}':
                 break  # Quit without updating
             # Loop will continue if user selects 4 or inputs invalid selection
         else:
@@ -280,10 +284,11 @@ def check_and_update_properties(properties_list, retrievers, method="fuzzy", inp
                         updated_property_values.append(augmented_value)
                         continue
                 # Since property_value is now expected to be a list, we handle each value individually
-                if input_func == "chainlit":
-                    n = 5
-                else:
-                    n = 3
+                n = few_shot_n
+                # if input_func == "chainlit":
+                #     n = 5
+                # else:
+                #     n = 3
                 top_matches = retriever.find_close_matches(value, method=method, n=n)
 
                 # Check if the closest match is the same as the current value
@@ -305,18 +310,20 @@ def check_and_update_properties(properties_list, retrievers, method="fuzzy", inp
                     print(f"\nCurrent {property_name}: {value}")
                     for i, match in enumerate(top_matches, start=1):
                         print(f"[{i}] {match}")
-                    print("[4] Enter new value")
+
+                    print(f"[{i+1}] Enter new value")
 
                     # hmm = input(f"Fix for Pycharm, press enter to continue")
 
-                    choice = input(f"Select the best match for {property_name} (1-4): ")
-                    if choice in ['1', '2', '3']:
+                    choice = input(f"Select the best match for {property_name} (1-{i+1}): ")
+                    # if choice == in range(1, i)
+                    if choice in [str(i) for i in range(1, i+1)]:
                         selected_match = top_matches[int(choice) - 1]
                         updated_property_values.append(selected_match)  # Update with the selected match
                         print(f"Updated {property_name} to {selected_match}")
-                    elif choice == '4':
+                    elif choice == f'{i+1}':
                         # Allow re-entry of value for this specific item
-                        recheck_property_value(properties, property_name, value, retrievers, input_func)
+                        recheck_property_value(properties, property_name, value, retriever)
                         # Note: Implement recheck_property_value to handle individual value updates within the list
                     else:
                         print("Invalid selection. Property not updated.")
