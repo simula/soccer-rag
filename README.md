@@ -19,6 +19,8 @@ Files needed are:
 * Labels-v2.json [link](https://www.soccer-net.org/data#h.5klq86rmgt96)
 * Labels-captions.json [link](https://www.soccer-net.org/data#h.ccybjenq8od4)
 
+For a full guide on how to download the data, please refer to the [SoccerNet package website](https://pypi.org/project/SoccerNet/).
+
 The data should be placed in the ./data/Dataset/SoccerNet/ directory
 For each league, create a new folder with the name of the leauge
 For each season create a new folder with the name of the season (YYYY-YYYY)
