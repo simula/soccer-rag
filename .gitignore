@@ -1,2 +1,13 @@
 
 *.pyc
+.env
+.chainlit/config.toml
+.chainlit/translations/en-US.json
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/soccer-rag.iml
+.idea/vcs.xml
+extractor.log
+data/games.db

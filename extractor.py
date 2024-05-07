@@ -37,11 +37,10 @@ db_uri = os.getenv('DATABASE_PATH')
 db_uri = f"sqlite:///{db_uri}"
 db = SQLDatabase.from_uri(db_uri)
 
-
 # from langchain_anthropic import ChatAnthropic
 class Extractor():
     # llm = ChatOpenAI(model_name="gpt-4-0125-preview", temperature=0)
-    # gpt-3.5-turbo
+    #gpt-3.5-turbo
     def __init__(self, model="gpt-3.5-turbo-0125", schema_config=None, custom_extractor_prompt=None):
         # model = "gpt-4-0125-preview"
         if custom_extractor_prompt:
@@ -136,6 +135,7 @@ class Retriever():
         # Get matches and their scores, limited by the specified 'limit'
         matches = process.extract(prompt, self.response, limit=limit)
 
+
         filtered_matches = [match for match in matches if match[1] >= threshold]
 
         # If no matches meet the threshold, return the list of all matches' strings
@@ -143,6 +143,7 @@ class Retriever():
             # Return matches above the low_threshold
             # Fix for wrong properties being returned
             return [match[0] for match in matches if match[1] >= low_threshold]
+
 
         # If there's only one match meeting the threshold, return it as a string
         if len(filtered_matches) == 1:
@@ -248,7 +249,7 @@ def recheck_property_value(properties, property_name, retrievers, input_func):
             print("No close matches found. Please try again or type 'quit' to stop.")
 
 
-def check_and_update_properties(properties_list, retrievers, method="fuzzy", input_func="input"):
+def check_and_update_properties(properties_list, retrievers, method="fuzzy", input_func=input):
     """
     Checks and updates the properties in the properties list based on close matches found in the database.
     The function iterates through each property in each property dictionary within the list,
@@ -264,7 +265,7 @@ def check_and_update_properties(properties_list, retrievers, method="fuzzy", inp
     The function updates the properties_list in place based on user choices for updating property values
     with close matches found by the retrievers.
     """
-    return_list = []
+
     for index, properties in enumerate(properties_list):
         for property_name, retriever in retrievers.items():  # Iterate using items to get both key and value
             property_values = properties.get(property_name, [])
@@ -280,11 +281,7 @@ def check_and_update_properties(properties_list, retrievers, method="fuzzy", inp
                         updated_property_values.append(augmented_value)
                         continue
                 # Since property_value is now expected to be a list, we handle each value individually
-                if input_func == "chainlit":
-                    n = 5
-                else:
-                    n = 3
-                top_matches = retriever.find_close_matches(value, method=method, n=n)
+                top_matches = retriever.find_close_matches(value, method=method, n=3)
 
                 # Check if the closest match is the same as the current value
                 if top_matches and top_matches[0] == value:
@@ -301,37 +298,29 @@ def check_and_update_properties(properties_list, retrievers, method="fuzzy", inp
                     updated_property_values.append(top_matches)
                     properties[property_name] = updated_property_values
                     continue
-                if input_func == "input":
-                    print(f"\nCurrent {property_name}: {value}")
-                    for i, match in enumerate(top_matches, start=1):
-                        print(f"[{i}] {match}")
-                    print("[4] Enter new value")
 
-                    # hmm = input(f"Fix for Pycharm, press enter to continue")
+                print(f"\nCurrent {property_name}: {value}")
+                for i, match in enumerate(top_matches, start=1):
+                    print(f"[{i}] {match}")
+                print("[4] Enter new value")
 
-                    choice = input(f"Select the best match for {property_name} (1-4): ")
-                    if choice in ['1', '2', '3']:
-                        selected_match = top_matches[int(choice) - 1]
-                        updated_property_values.append(selected_match)  # Update with the selected match
-                        print(f"Updated {property_name} to {selected_match}")
-                    elif choice == '4':
-                        # Allow re-entry of value for this specific item
-                        recheck_property_value(properties, property_name, value, retrievers, input_func)
-                        # Note: Implement recheck_property_value to handle individual value updates within the list
-                    else:
-                        print("Invalid selection. Property not updated.")
-                        updated_property_values.append(value)  # Keep the original value
-                elif input_func == "chainlit":  # If we use UI, just return the list of top matches, and then let the user select
-                    options = {property_name: value, "top_matches": top_matches}
-                    return_list.append(options)
+                # hmm = input_func(f"Fix for Pycharm, press enter to continue")
+
+                choice = input_func(f"Select the best match for {property_name} (1-4): ")
+                if choice in ['1', '2', '3']:
+                    selected_match = top_matches[int(choice) - 1]
+                    updated_property_values.append(selected_match)  # Update with the selected match
+                    print(f"Updated {property_name} to {selected_match}")
+                elif choice == '4':
+                    # Allow re-entry of value for this specific item
+                    recheck_property_value(properties, property_name, value, retrievers, input_func)
+                    # Note: Implement recheck_property_value to handle individual value updates within the list
+                else:
+                    print("Invalid selection. Property not updated.")
+                    updated_property_values.append(value)  # Keep the original value
 
             # Update the entire list for the property after processing all values
             properties[property_name] = updated_property_values
-
-    if input_func == "chainlit":
-        return properties, return_list
-    else:
-        return properties
 
 
 # Function to remove duplicates
@@ -367,21 +356,18 @@ def fetch_pks(properties_list, retrievers):
     return all_pk_attributes
 
 
-# def update_prompt(prompt, properties, pk, properties_original):
-#     # Replace the original prompt with the updated properties and pk
-#     prompt = prompt.replace("{{properties}}", str(properties))
-#     prompt = prompt.replace("{{pk}}", str(pk))
-#     return prompt
+def update_prompt(prompt, properties, pk, properties_original):
+    # Replace the original prompt with the updated properties and pk
+    prompt = prompt.replace("{{properties}}", str(properties))
+    prompt = prompt.replace("{{pk}}", str(pk))
+    return prompt
 
 
-def update_prompt(prompt, properties, pk, properties_original, retrievers):
+def update_prompt_enhanced(prompt, properties, pk, properties_original):
     updated_info = ""
     for prop, pk_info, prop_orig in zip(properties, pk, properties_original):
         for key in prop.keys():
             # Extract original and updated values
-            if key in retrievers:
-                # Fetch the primary key using the retriever for the current property
-                table = retrievers[key].table
             orig_values = prop_orig.get(key, [])
             updated_values = prop.get(key, [])
 
@@ -407,13 +393,9 @@ def update_prompt(prompt, properties, pk, properties_original, retrievers):
                 if orig_value != updated_value and pk_value:
                     update_statement = f"\n- {orig_value} (now referred to as {updated_value}) has a primary key: {pk_value}."
                 elif orig_value != updated_value:
-                    update_statement = f"\n- {orig_value} (now referred to as {updated_value}."
+                    update_statement = f"\n- {orig_value} (now referred to as {updated_value})."
                 elif pk_value:
                     update_statement = f"\n- {orig_value} has a primary key: {pk_value}."
-                elif orig_value == updated_value and pk_value:
-                    update_statement = f"\n- {orig_value} has a primary key: {pk_value}."
-                elif orig_value == updated_value:
-                    update_statement = f"\n- {orig_value}."
 
                 updated_info += update_statement
 
@@ -437,7 +419,7 @@ def prompt_cleaner(prompt, db, schema_config):
         check_and_update_properties(properties, retrievers)
 
         pk = fetch_pks(properties, retrievers)
-    properties = update_prompt(prompt, properties, pk, properties_original)
+    properties = update_prompt_enhanced(prompt, properties, pk, properties_original)
 
     return properties, pk
 
@@ -482,9 +464,8 @@ class PromptCleaner:
         self.schema_config = schema_config
         self.retrievers = setup_retrievers(self.db, self.schema_config)
         self.cust_extractor_prompt = custom_extractor_prompt
-        self.properties_original = None
 
-    def clean(self, prompt, return_pk=False, test=False, verbose=False):
+    def clean(self, prompt, return_pk=False, test=False, verbose = False):
         """
         Processes the given prompt to extract properties, remove duplicates, update the properties
         based on close matches within the database, and fetch primary keys for these properties.
@@ -514,50 +495,24 @@ class PromptCleaner:
             properties = extract_properties(prompt, self.schema_config)
         # Keep original properties for later use
         properties_original = deepcopy(properties)
-
         if test:
             return properties_original
         # Remove duplicates - Happens when there are more than one player or team in the prompt
         # properties = remove_duplicates(properties)
         pk = None
-        # VALIDATE PROPERTIES
         if properties:
             check_and_update_properties(properties, self.retrievers)
             pk = fetch_pks(properties, self.retrievers)
-        properties = update_prompt(prompt=prompt, properties=properties, pk=pk, properties_original=properties_original,
-                                   retrievers=self.retrievers)
+        properties = update_prompt_enhanced(prompt, properties, pk, properties_original)
 
-        # Prepare additional data if requested
-        if return_pk and verbose:
-            return (properties, pk), (properties, properties_original)
-        elif return_pk:
+
+
+        if return_pk:
             return properties, pk
         elif verbose:
             return properties, properties_original
-
-        return properties
-
-    def extract_chainlit(self, prompt):
-        if self.cust_extractor_prompt:
-
-            properties = extract_properties(prompt, self.schema_config, self.cust_extractor_prompt)
-
         else:
-            properties = extract_properties(prompt, self.schema_config)
-        self.properties_original = deepcopy(properties)
-        return properties
-
-    def validate_chainlit(self, properties):
-        properties, need_val = check_and_update_properties(properties, self.retrievers, input_func="chainlit")
-        return properties, need_val
-
-    def build_prompt_chainlit(self, properties, prompt):
-        pk = None
-        # self.properties_original= deepcopy(properties)
-        if properties:
-            pk = fetch_pks(properties, self.retrievers)
-        prompt_new = update_prompt(prompt, properties, pk, self.properties_original, self.retrievers)
-        return prompt_new
+            return properties
 
 
 def load_json(file_path: str) -> dict:
@@ -570,19 +525,19 @@ def create_extractor(schema: str = "src/conf/schema.json", db: SQLDatabase = db_
     db = SQLDatabase.from_uri(db)
     pre_prompt = """Extract and save the relevant entities mentioned \
                     in the following passage together with their properties.
-
+                    
                     Only extract the properties mentioned in the 'information_extraction' function. 
-
+                    
                     The questions are soccer related. game_event are things like yellow cards, goals, assists, freekick ect.
                     Generic properties like, "description", "home team", "away team", "game" ect should NOT be extracted.
-
+                    
                     If a property is not present and is not required in the function parameters, do not include it in the output.
                     If no properties are found, return an empty list.
-
+                    
                     Here are some exampels:
                     'How many goals did Henry score for Arsnl in the 2015 season?'
                     person_name': ['Henry'], 'team_name': [Arsnl],'year_season': ['2015'],
-
+                    
                     Passage:
                     {input}
     """
@@ -591,19 +546,15 @@ def create_extractor(schema: str = "src/conf/schema.json", db: SQLDatabase = db_
 
 
 if __name__ == "__main__":
+
+
     schema_config = load_json("src/conf/schema.json")
     # Add game and league to the schema_config
 
     # prompter = PromptCleaner(db, schema_config, custom_extractor_prompt=extract_prompt)
     prompter = create_extractor("src/conf/schema.json", "sqlite:///data/games.db")
-    prompt = prompter.clean(
-        "Give me goals, shots on target, shots off target and corners from the game between ManU and Swansa and Manchester City")
+    prompt= prompter.clean("Give me goals, shots on target, shots off target and corners from the game between ManU and Swansa")
+
 
     print(prompt)
-    # ex = create_extractor()
-    #
-    # val_list = [{'person_name': ['Cristiano Ronaldo'], 'team_name': ['Manchester City']}]
-    # user_prompt = "Did ronaldo play for city?"
-    # p = ex.build_prompt_chainlit(val_list, user_prompt)
-    # print(p)
 

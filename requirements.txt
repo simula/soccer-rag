@@ -10,5 +10,7 @@ rapidfuzz==3.6.1
 thefuzz==0.22.1
 faiss-cpu
 Levenshtein==0.25.0
-langsmith~=0.1.54
+langsmith~=0.0.92
 python-dotenv==1.0.1
+chainlit~=1.0.506
+pandas

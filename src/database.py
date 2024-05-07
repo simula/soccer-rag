@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import json
 
-engine = create_engine('sqlite:///../../data/games.db', echo=False)
+engine = create_engine('sqlite:///../data/games.db', echo=False)
 Base = declarative_base()
 
 
@@ -24,6 +24,7 @@ class Game(Base):
     date = Column(String)
     season = Column(String)
     league_id = Column(Integer, ForeignKey('leagues.id'))
+
 
 class GameLineup(Base):
     __tablename__ = 'game_lineup'
@@ -45,6 +46,7 @@ class Team(Base):
     __tablename__ = 'teams'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+
 
 class Player(Base):
     __tablename__ = 'players'
@@ -75,10 +77,12 @@ class Commentary(Base):
     event_time_end = Column(Float)
     description = Column(Text)
 
+
 class League(Base):
     __tablename__ = 'leagues'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+
 
 class Event(Base):
     __tablename__ = 'events'
@@ -92,11 +96,13 @@ class Event(Base):
     label = Column(String)
     visibility = Column(Boolean)
 
+
 class Augmented_Team(Base):
     __tablename__ = 'augmented_teams'
     id = Column(Integer, primary_key=True)
     team_id = Column(Integer, ForeignKey('teams.id'))
     augmented_name = Column(String)
+
 
 class Augmented_League(Base):
     __tablename__ = 'augmented_leagues'
@@ -104,24 +110,22 @@ class Augmented_League(Base):
     league_id = Column(Integer, ForeignKey('leagues.id'))
     augmented_name = Column(String)
 
+
 class Player_Event_Label(Base):
     __tablename__ = 'player_event_labels'
     id = Column(Integer, primary_key=True)
     label = Column(String)
+
 
 class Player_Event(Base):
     __tablename__ = 'player_events'
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer, ForeignKey('games.id'))
     player_id = Column(Integer, ForeignKey('players.hash'))
-    time = Column(String) # Time in minutes of the game
+    time = Column(String)  # Time in minutes of the game
     type = Column(Integer, ForeignKey('player_event_labels.id'))
-    linked_player = Column(Integer, ForeignKey('players.hash')) # If the event is linked to another player, for example a substitution
-
-
-
-
-
+    linked_player = Column(Integer, ForeignKey(
+        'players.hash'))  # If the event is linked to another player, for example a substitution
 
 
 # Create Tables
@@ -130,10 +134,12 @@ Base.metadata.create_all(engine)
 # Session setup
 Session = sessionmaker(bind=engine)
 
-def extract_time_from_player_event(time:str)->str:
+
+def extract_time_from_player_event(time: str) -> str:
     # Extract the time from the string
-    time = time.split("'")[0] # Need to keep it str because of overtime eg. (45+2)
+    time = time.split("'")[0]  # Need to keep it str because of overtime eg. (45+2)
     return time
+
 
 def get_or_create(session, model, **kwargs):
     instance = session.query(model).filter_by(**kwargs).first()
@@ -145,7 +151,8 @@ def get_or_create(session, model, **kwargs):
         session.commit()
         return instance
 
-def process_game_data(data,data2, league, season):
+
+def process_game_data(data, data2, league, season):
     session = Session()
     # Caption = d and v2 = d2
     home_team = data["gameHomeTeam"]
@@ -169,7 +176,8 @@ def process_game_data(data,data2, league, season):
     # Check if league exists
     league = get_or_create(session, League, name=league)
     if not game:
-        game = Game(timestamp=timestamp, score=score, goal_home=home_score, goal_away=away_score, round=round_, home_team_id=home_team.id, away_team_id=away_team.id,
+        game = Game(timestamp=timestamp, score=score, goal_home=home_score, goal_away=away_score, round=round_,
+                    home_team_id=home_team.id, away_team_id=away_team.id,
                     venue=venue, date=date, attendance=attendance, season=season, league_id=league.id, referee=referee)
         session.add(game)
         session.commit()
@@ -187,22 +195,19 @@ def process_game_data(data,data2, league, season):
         for player_data in team_lineup["players"]:
             player_hash = player_data["hash"]
             name = player_data["long_name"]
-            if " " not in name: # Since some players are missing their first name, do this to help with the search
+            if " " not in name:  # Since some players are missing their first name, do this to help with the search
                 name = "NULL " + name
             number = player_data["shirt_number"]
             captain = player_data["captain"] == "(C)"
             starting = player_data["starting"]
             country = player_data["country"]
             position = player_data["lineup"]
-            facts = player_data.get("facts", None) # Facts might be empty
-
-
-
-
+            facts = player_data.get("facts", None)  # Facts might be empty
 
             player = get_or_create(session, Player, hash=player_hash, name=name, country=country)
             game_lineup = GameLineup(game_id=game.id, team_id=team_id, player_id=player.hash,
-                                     shirt_number=number, position=position, starting=starting, captain=captain, coach=False, tactics=tactic)
+                                     shirt_number=number, position=position, starting=starting, captain=captain,
+                                     coach=False, tactics=tactic)
             if facts:
                 for fact in facts:
                     type = fact["type"]
@@ -210,7 +215,8 @@ def process_game_data(data,data2, league, season):
                     event = get_or_create(session, Player_Event_Label, id=int(type))
                     linked_player = fact.get("linked_player_hash", None)
 
-                    player_event = Player_Event(game_id=game.id, player_id=player.hash, time=time, type=event.id, linked_player=linked_player)
+                    player_event = Player_Event(game_id=game.id, player_id=player.hash, time=time, type=event.id,
+                                                linked_player=linked_player)
                     session.add(player_event)
             session.add(game_lineup)
 
@@ -223,7 +229,8 @@ def process_game_data(data,data2, league, season):
         coach_country = coach["country"]
         coach_player = get_or_create(session, Player, hash=coach_hash, name=coach_name, country=coach_country)
         game_lineup = GameLineup(game_id=game.id, team_id=team_id, player_id=coach_player.hash,
-                                 shirt_number=None, position=None, starting=None, captain=False, coach=True, tactics=tactic)
+                                 shirt_number=None, position=None, starting=None, captain=False, coach=True,
+                                 tactics=tactic)
         session.add(game_lineup)
 
         # Commit all changes at once
@@ -241,7 +248,7 @@ def process_game_data(data,data2, league, season):
             label = "yellow card"
         elif label == "r-card":
             label = "red card"
-        
+
         description = event["description"]
         important = event["important"] == "true"
         visible = event["visibility"]
@@ -257,8 +264,10 @@ def process_game_data(data,data2, league, season):
 
     return game.id, home_team.id, away_team.id
 
+
 def process_player_data(data):
     pass
+
 
 def process_ASR_data(data, game_id, period):
     session = Session()
@@ -276,6 +285,7 @@ def process_ASR_data(data, game_id, period):
     session.bulk_save_objects(commentary_events)
     session.commit()
     session.close()
+
 
 def convert_to_seconds(time_str):
     # Split the string into its components
@@ -321,15 +331,12 @@ def parse_labels_v2(data, session, home_team_id, away_team_id, game_id):
             game_time=game_time,  # Already in seconds
             frame_stamp=position,  # Make sure this is an integer or None
             team_id=team_id,  # Integer ID of the team
-            visibility=visibility, # Boolean
-            label=label # String with information
+            visibility=visibility,  # Boolean
+            label=label  # String with information
         )
         session.add(annotation_entry)
 
     session.commit()
-
-
-
 
 
 def process_json_files(directory):
@@ -355,7 +362,7 @@ def process_json_files(directory):
                 lb_cap = json.load(f)
             with open(os.path.join(root, "Labels-v2.json"), 'r') as f:
                 lb_v2 = json.load(f)
-            game_id, home_team_id, away_team_id = process_game_data(lb_cap,lb_v2, league, season)
+            game_id, home_team_id, away_team_id = process_game_data(lb_cap, lb_v2, league, season)
 
         for file in asr_files:
             with open(os.path.join(root, file), 'r') as f:
@@ -368,19 +375,18 @@ def process_json_files(directory):
             elif '1_half-ASR' in file:
                 period = 1
                 # Parse and commit the data
-                process_ASR_data(data=asr, game_id = game_id, period=period)
+                process_ASR_data(data=asr, game_id=game_id, period=period)
 
             elif '2_half-ASR' in file:
                 period = 2
                 # Parse and commit the data
-                process_ASR_data(data=asr, game_id = game_id, period=period)
-
+                process_ASR_data(data=asr, game_id=game_id, period=period)
 
     session.commit()
     session.close()
 
-def fill_player_events(session):
 
+def fill_player_events(session):
     fact_id2label = {
         "1": "Yellow card",
         # Example: "time": "71' Ivanovic B. (Unsportsmanlike conduct)", "description": "Yellow Card"
@@ -397,9 +403,7 @@ def fill_player_events(session):
     session.commit()
 
 
-
 def fill_Augmented_Team(file_path):
-
     df = pd.read_csv(file_path)
     # the df should have two columns, team_name and augmented_name
 
@@ -417,6 +421,7 @@ def fill_Augmented_Team(file_path):
     session.commit()
     session.close()
 
+
 def fill_Augmented_League(file_path):
     # Read the csv file
     df = pd.read_csv(file_path)
@@ -432,14 +437,16 @@ def fill_Augmented_League(file_path):
         augmented_name = augmented_name.strip()
         league = session.query(League).filter_by(name=league_name).first()
         if league:
-            augmented_league = get_or_create(session, Augmented_League, league_id=league.id, augmented_name=augmented_name)
+            augmented_league = get_or_create(session, Augmented_League, league_id=league.id,
+                                             augmented_name=augmented_name)
     session.commit()
     session.close()
 
+
 if __name__ == "__main__":
     # Example directory path
-    process_json_files('../data/Dataset/SoccerNet/')
-    fill_Augmented_Team('../data/dataset/augmented_teams.csv')
-    fill_Augmented_League('../data/dataset/augmented_leagues.csv')
+    process_json_files('../data/Dataset/SN-ASR_captions_and_actions/')
+    fill_Augmented_Team('../data/Dataset/augmented_teams.csv')
+    fill_Augmented_League('../data/Dataset/augmented_leagues.csv')
 # Rename the event/annotation table to something more descriptive. Events are fucking everything else over
 

@@ -1,8 +1,15 @@
 from src.extractor import create_extractor
 from src.sql_chain import create_agent
+import os
+from dotenv import load_dotenv
+
 ex = create_extractor()
-ag = create_agent(llm_model="gpt-3.5-turbo-0125", verbose=False)
-# ag = create_agent(llm_model = "gpt-4-0125-preview")
+load_dotenv(".env")
+
+model = os.getenv('OPENAI_MODEL')
+
+ex = create_extractor()
+ag = create_agent(llm_model=model)
 
 def query(prompt):
     clean = ex.clean(prompt)

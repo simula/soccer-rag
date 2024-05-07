@@ -32,12 +32,25 @@ python src/database.py
 ````
 Adjust the path to the data in the database.py file as needed.
 
-## Running the code
+## Running the code in command line
 To run the code, execute the following command:
 ````bash
+The code will prompt you to enter a natural language query.
+
 python main.py
 ````
-The code will prompt you to enter a natural language query.
+You can also call main_cli.py with a query as an argument:
+````bash
+python main_cli.py -q "How many goals has Messi scored each season?"
+````
+
+## Running the code in ChainLit (GUI)
+To run the code in ChainLit, execute the following command:
+````bash
+chainlit run app.py
+````
+This will open up a browser window with the GUI. 
+![ChainLit](media/chainlit.png)
 
 ### Example query
 ````angular2html
@@ -47,6 +60,7 @@ Lionel Messi has scored the following number of goals each season:
 - 2015-2016: 3 goals
 - 2016-2017: 31 goals
 ````
+
 
 ## Results
 ![result-table.png](media%2Fresult-table.png)
