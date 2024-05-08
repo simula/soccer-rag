@@ -12,11 +12,40 @@ model = os.getenv('OPENAI_MODEL')
 # Check if model exists, if not, set it to default
 # if not model:
 #     model = "gpt-3.5-turbo-0125"
-ex = create_extractor()
-ag = create_agent(llm_model=model)
-# ag = create_agent(llm_model = "gpt-4-0125-preview")
-openai_api_key = os.getenv('OPENAI_API_KEY')
 
+
+
+interactive_key_done= False if os.getenv('INTERACTIVE_OPENAI_KEY', None) else True
+
+if interactive_key_done:
+    ex = create_extractor()
+    ag = create_agent(llm_model=model)
+else:
+    ex= None
+    ag = None
+
+@cl.on_chat_start
+async def on_chat_start():
+    global ex, ag, interactive_key_done
+    if not interactive_key_done:
+        res =  await cl.AskUserMessage(content=" 🔑 Input your OPENAI_API_KEY from https://platform.openai.com/account/api-keys", timeout=10).send()
+        if res:
+            await cl.Message(
+                content=f"⌛ Checking if provided OpenAI API key works. Please wait...",
+            ).send()
+            cl.user_session.set("openai_api_key", res.get("output"))
+            try:
+                os.environ["OPENAI_API_KEY"] = res.get("output")
+                ex = create_extractor()
+                ag = create_agent(llm_model=model)
+                interactive_key_done= True
+                await cl.Message(author="Socccer-RAG", content="✅ Voila! ⚽ Socccer-RAG warmed up and ready to go! You can start a fresh chat session from New Chat").send()
+            except Exception as e:
+                await cl.Message(
+                    content=f"Error: {e}. Start new chat with correct key.",
+                ).send()
+            
+            # ag = create_agent(llm_model = "gpt-4-0125-preview")
 
 
 
@@ -130,6 +159,12 @@ async def Extractor(user_prompt):
 
 @cl.on_message  # this function will be called every time a user inputs a message in the UI
 async def main(message: cl.Message):
+    global interactive_key_done
+    if not interactive_key_done:
+        await cl.Message(
+            content=f"Please set the OpenAI API key first by starting a new chat.",
+        ).send()
+        return
     user_prompt = message.content # Get the user prompt
     # extracted_values = extract_func(user_prompt)
     #
@@ -155,7 +190,7 @@ async def main(message: cl.Message):
                 content=f"Which one do you mean for {key}?", 
                 actions=actions
             ).send()
-            selected_value = res.get("value", "") if res else ""
+            selected_value = res.get("value") if res else ""
             element[key] = selected_value
             element.pop("top_matches")
             await Choice("Options were "+ ", ".join([action.label for action in actions]))

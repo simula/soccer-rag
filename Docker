@@ -16,7 +16,7 @@ COPY . .
 
 COPY ".env_demo" ".env"
 
-
 RUN chmod -R 777 /code/
 
 CMD ["chainlit", "run", "-h", "app.py", "--port", "7860"]
+ENV INTERACTIVE_OPENAI_KEY=1
