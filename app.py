@@ -56,6 +56,7 @@ async def on_chat_start():
                 await cl.Message(
                     content=f"❌Error: {e}. \n 🤗 Please Start new chat to set correct key.",
                 ).send()
+                return
     await cl.ChatSettings([Select(id="Setting",label="Remove/change you OpenAI API Key?",values=["Click Confirm:"],)]).send()
 
             # ag = create_agent(llm_model = "gpt-4-0125-preview")
