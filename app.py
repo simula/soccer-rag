@@ -147,14 +147,11 @@ async def main(message: cl.Message):
             key = next(iter(element))  # Get the first key in the dictionary
             # Present user with options to choose from
             actions = [
-                cl.Action(name=value, value=value, description=str(value))
+                cl.Action(name="option", value=value, label=value)
                 for value in element['top_matches']
             ]
-            actions.append(cl.Action(name="No Update", value="", description="No Update"))
-            # Add a "No Update" option
             res = await cl.AskActionMessage(
-                author="Validator",
-                content=f"Select the correct value for {element[key]}",
+                content=f"Select the correct value for {key}",  # Assuming 'key' is a variable you meant to replace
                 actions=actions
             ).send()
             selected_value = res.get("value", "") if res else ""
