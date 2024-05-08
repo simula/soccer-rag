@@ -40,7 +40,7 @@ pip install soccernet
 ````python
 from SoccerNet.Downloader import SoccerNetDownloader
 mySoccerNetDownloader = SoccerNetDownloader(LocalDirectory="data/dataset/SoccerNet")
-mySoccerNetDownloader.downloadDataTask(task="caption-2023", split=["train", "valid", "test", "challenge"])
+mySoccerNetDownloader.downloadGames(files=["Labels-caption.json"], split=["train", "valid", "test"]) 
 mySoccerNetDownloader.downloadGames(files=["Labels-v2.json"], split=["train", "valid", "test"]) 
 ````
 
