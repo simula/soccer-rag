@@ -13,7 +13,7 @@ RUN pip install   -r /code/requirements.txt
 
 COPY . .
 
-RUN python ./src/database.py
+# RUN python ./src/database.py
 
 
 COPY ".env_demo" ".env"
