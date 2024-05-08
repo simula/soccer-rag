@@ -25,7 +25,9 @@ as this package is not in the requirements.txt file.
 Expected setup time is around 10 minutes.
 
 If you want to download the data and set up the database manually, you can do so by following the instructions below.
-### Required data
+
+### Downloading the data manually
+
 The data required to run the code is not included in this repository. 
 The data can be downloaded from the [Soccernet](https://www.soccer-net.org/data).
 Files needed are:
