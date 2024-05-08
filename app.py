@@ -31,13 +31,9 @@ async def setup_agent(settings):
     global interactive_key_done
     if cl.user_session.get("openai_api_key") == os.environ["OPENAI_API_KEY"]:
         os.environ["OPENAI_API_KEY"]= ""
-        await cl.Message("OpenAI API Key cleared, start new chat now!").send()
+        await cl.Message("OpenAI API Key cleared, start a new chat to set new key!").send()
         interactive_key_done= False
 
-
-@cl.on_chat_start
-async def start():
-    settings = await cl.ChatSettings([Select(id="Setting",label="Clear GPT Token?",values=["Click Confirm:"],)]).send()
 
 @cl.on_chat_start
 async def on_chat_start():
@@ -54,14 +50,14 @@ async def on_chat_start():
                 ex = create_extractor()
                 ag = create_agent(llm_model=model)
                 interactive_key_done= True
-                await cl.ChatSettings([Select(id="Setting",label="Clear GPT Token?",values=["Click Confirm:"],)]).send()
                 await cl.Message(author="Socccer-RAG", content="✅ Voila! ⚽ Socccer-RAG warmed up and ready to go! You can start a fresh chat session from New Chat").send()
                 await cl.Message("To remove/change you OpenAI API key, click on the settings icon on the left of the chat box.").send()
             except Exception as e:
                 await cl.Message(
-                    content=f"Error: {e}. Start new chat with correct key.",
+                    content=f"❌Error: {e}. \n 🤗 Please Start new chat to set correct key.",
                 ).send()
-            
+    await cl.ChatSettings([Select(id="Setting",label="Remove/change you OpenAI API Key?",values=["Click Confirm:"],)]).send()
+
             # ag = create_agent(llm_model = "gpt-4-0125-preview")
 
 
