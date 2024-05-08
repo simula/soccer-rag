@@ -150,14 +150,15 @@ async def main(message: cl.Message):
                 cl.Action(name="option", value=value, label=value)
                 for value in element['top_matches']
             ]
-            res = await cl.AskActionMessage(
-                content=f"Select the correct value for {key}",  # Assuming 'key' is a variable you meant to replace
+            await cl.Message(author="Resolver", content=f"Need to identify the correct value for {key}: ").send()
+            res = await cl.AskActionMessage(author="Resolver",
+                content=f"Which one do you mean for {key}?", 
                 actions=actions
             ).send()
             selected_value = res.get("value", "") if res else ""
             element[key] = selected_value
             element.pop("top_matches")
-            await Choice(selected_value)  # Logging choice
+            await Choice("Options were "+ ", ".join([action.label for action in actions]))
         # Get the cleaned prompt
         cleaned_prompt = human_validate_func(need_input, validated, user_prompt)
     else:
