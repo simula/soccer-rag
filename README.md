@@ -12,6 +12,19 @@ Rename .env_demo to .env and fill in the required fields.
 
 ## Setting up the database
 
+By running 
+````bash
+python setup.py
+````
+from project root, all files will be downloaded, and the database will be set up.
+Before running the setup, make sure to fill in the required fields in the .env file, and do a 
+````bash
+pip install soccernet
+````
+as this package is not in the requirements.txt file.
+Expected setup time is around 10 minutes.
+
+If you want to download the data and set up the database manually, you can do so by following the instructions below.
 ### Required data
 The data required to run the code is not included in this repository. 
 The data can be downloaded from the [Soccernet](https://www.soccer-net.org/data).

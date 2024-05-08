@@ -3,8 +3,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 import pandas as pd
 import os
 import json
+import dotenv
+dotenv.load_dotenv()
 
-engine = create_engine('sqlite:///../data/games.db', echo=False)
+db_uri = os.getenv('DATABASE_PATH')
+db_uri = f"sqlite:///{db_uri}"
+engine = create_engine(db_uri, echo=False)
 Base = declarative_base()
 
 
@@ -445,7 +449,7 @@ def fill_Augmented_League(file_path):
 
 if __name__ == "__main__":
     # Example directory path
-    process_json_files('../data/Dataset/SN-ASR_captions_and_actions/')
+    process_json_files('../data/Dataset/SoccerNet/')
     fill_Augmented_Team('../data/Dataset/augmented_teams.csv')
     fill_Augmented_League('../data/Dataset/augmented_leagues.csv')
 # Rename the event/annotation table to something more descriptive. Events are fucking everything else over

@@ -414,7 +414,7 @@ def update_prompt(prompt, properties, pk, properties_original, retrievers):
                 if orig_value != updated_value and pk_value:
                     update_statement = f"\n- {orig_value} (now referred to as {updated_value}) has a primary key: {pk_value}."
                 elif orig_value != updated_value:
-                    update_statement = f"\n- {orig_value} (now referred to as {updated_value}."
+                    update_statement = f"\n- {orig_value} (now referred to as {updated_value}.)"
                 elif pk_value:
                     update_statement = f"\n- {orig_value} has a primary key: {pk_value}."
                 elif orig_value == updated_value and pk_value:

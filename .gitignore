@@ -11,3 +11,4 @@
 .idea/vcs.xml
 extractor.log
 data/games.db
+/data/dataset/SoccerNet
