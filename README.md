@@ -3,7 +3,7 @@ sdk: docker
 ---
 <!---WARNING!! The snippet above is required for Huggingface Space in https://huggingface.co/spaces/SimulaMet-HOST/SoccerRAG, so don't remove or move this.
 You need to manually update games.db in space in ./data as space doesn't allow pushing file more than 10MB.
-Sushant usually force updates that space repo with Github's version and then uploads the db file manually.
+Sushant usually force updates that space repo with Github's version and then uploads the db file manually at https://huggingface.co/spaces/SimulaMet-HOST/SoccerRAG/tree/main/data
 --->
 
 # SoccerRAG: Multimodal Soccer Information Retrieval via Natural Queries
