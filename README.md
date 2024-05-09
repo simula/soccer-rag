@@ -1,13 +1,7 @@
 ---
-title: https://huggingface.co/docs/hub/spaces-config-reference
-emoji: ⚽
-colorFrom: green
-colorTo: red
 sdk: docker
-pinned: false
-app_port: 7860
-app_file: app.py
 ---
+<!---WARNING!! The snippet above is required for Huggingface Space, so don't remove or move this--->
 
 # SoccerRAG: Multimodal Soccer Information Retrieval via Natural Queries
 
