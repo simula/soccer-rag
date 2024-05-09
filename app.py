@@ -51,7 +51,7 @@ async def on_chat_start():
                 ag = create_agent(llm_model=model)
                 interactive_key_done= True
                 await cl.Message(author="Socccer-RAG", content="✅ Voila! ⚽ Socccer-RAG warmed up and ready to go! You can start a fresh chat session from New Chat").send()
-                await cl.Message("💡Remeber to clear your keys when you are done. To remove/change you OpenAI API key, click on the settings icon on the left of the chat box.").send()
+                await cl.Message("💡Remember to clear your keys when you are done. To remove/change you OpenAI API key, click on the settings icon on the left of the chat box.").send()
             except Exception as e:
                 await cl.Message(
                     content=f"❌Error: {e}. \n 🤗 Please Start new chat to set correct key.",
