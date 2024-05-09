@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
 if os.getenv('LANGSMITH'):
-    os.environ['LANGCHAIN_TRACING_V2'] = 'false'
+    os.environ['LANGCHAIN_TRACING_V2'] = 'true'
     os.environ['LANGCHAIN_ENDPOINT'] = 'https://api.smith.langchain.com'
     os.environ[
         'LANGCHAIN_API_KEY'] = os.getenv("LANGSMITH_API_KEY")
