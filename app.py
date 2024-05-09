@@ -199,6 +199,7 @@ async def main(message: cl.Message):
                 cl.Action(name="option", value=value, label=value)
                 for value in element['top_matches']
             ]
+            actions.append(cl.Action(name="No Update", value="", description="No Update"))
             await cl.Message(author="Resolver", content=f"Need to identify the correct value for {key}: ").send()
             res = await cl.AskActionMessage(author="Resolver",
                 content=f"Which one do you mean for {key}?", 
