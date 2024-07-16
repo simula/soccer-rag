@@ -141,7 +141,8 @@ This research was partly funded by the Research Council of Norway, project numbe
       primaryClass={cs.IR},
       url={https://arxiv.org/abs/2406.01273}, 
 }
-
+```
+```
 @misc{strand2024demosoccerinformationretrieval,
       title={Demo: Soccer Information Retrieval via Natural Queries using SoccerRAG}, 
       author={Aleksander Theo Strand and Sushant Gautam and Cise Midoglu and Pål Halvorsen},
