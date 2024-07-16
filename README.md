@@ -101,10 +101,34 @@ Lionel Messi has scored the following number of goals each season:
 
 
 ## Results
+
+Sample questions (Q1-Q20) and corresponding results can be found below.
+
+- **Question 1:** Is Manchester United in the database?
+- **Question 2:** Give me the total home goals for Bayern M in the 2014-15 season.
+- **Question 3:** Calculate home advantage for Real Madrid in the 2015-16 season
+- **Question 4:** How many goals did Messi score in the 15-16 season?
+- **Question 5:** How many yellow-cards did Enzo Perez get in the 15-2016 season?
+- **Question 6:** List all teams that played a game against Napoli in 2016-17 season in seriea? Do not limit the number of results
+- **Question 7:** Give all the teams in the league ucl in the 2015-2016 season?
+- **Question 8:** Give me all games in epl with yellow cards in the first half in the 2015-2016 season
+- **Question 9:** What teams and leagues has Adnan Januzaj play in?
+- **Question 10:** List ALL players that started a game for Las Palmas in the 2016-2017 season? Do NOT limit the number of results .
+- **Question 11:** Did Ajax or Manchester United win the most games in the 2014-15 season?
+- **Question 12:** How many yellow and red cards were given in the UEFA Champions League in the 2015-2016 season?
+- **Question 13:** Are Messi and C. Ronaldo in the database?
+- **Question 14:** How many goals did E. Hazard score in the game between Bournemouth and Chelsea in the 2015-2016 season?
+- **Question 15:** How many yellow cards were given in the game between Bayern Munich and Shakhtar Donetsk in the 2014-15 UEFA Champions League, and did anyone receive a red card?
+- **Question 16:** Make a list of when corners happened in the English Premier League (EPL) 2015-2016 season. Aggregate by a period of 15 minutes.
+- **Question 17:** What league is Manchester United, Arsenal, Bournemouth, Real Madrid, Chelsea, and Liverpool in?
+- **Question 18:** How many players have "Aleksandar" as their first name in the database, and how many goals have they scored in total?
+- **Question 19:** What did the commentary say about the game between Arsenal and Southampton in the 2016-17 season?
+- **Question 20:** Have Mesut Ozil, Pablo Insua, or Alex Pike played for West Ham or Barcelona?
+        
 ![result-table.png](media%2Fresult-table.png)
 
 ## Acknowledgements
-This research was partly funded by the Research Council of Norway, project number 346671 ([AI-storyteller](https://prosjektbanken.forskningsradet.no/project/FORISS/346671)). 
+This research was partly funded by the Research Council of Norway, project number 346671 ([AI-Storyteller](https://prosjektbanken.forskningsradet.no/project/FORISS/346671)). 
 
 ## Citation
 ```
